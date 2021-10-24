@@ -7,7 +7,7 @@ import com.mariobaron.bankaccountscqrsdemo.common.event.AccountActivatedEvent;
 import com.mariobaron.bankaccountscqrsdemo.common.event.AccountCreatedEvent;
 import com.mariobaron.bankaccountscqrsdemo.common.event.AccountCreditedEvent;
 import com.mariobaron.bankaccountscqrsdemo.common.event.AccountDebitedEvent;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -17,7 +17,7 @@ import org.axonframework.spring.stereotype.Aggregate;
 import java.math.BigDecimal;
 
 @Aggregate
-@Slf4j
+@Log
 public class AccountAggregate {
 
     @AggregateIdentifier
@@ -30,7 +30,7 @@ public class AccountAggregate {
 
     @CommandHandler
     public AccountAggregate(CreateAccountCommand createAccountCommand) {
-        log.info("CreateAccountCommand received.");
+        //log.info("CreateAccountCommand received.");
         AggregateLifecycle.apply(new AccountCreatedEvent(
                 createAccountCommand.getId(),
                 createAccountCommand.getBalance()));
@@ -38,7 +38,7 @@ public class AccountAggregate {
 
     @EventSourcingHandler
     public void on(AccountCreatedEvent accountCreatedEvent) {
-        log.info("An AccountCreatedEvent occurred.");
+        //log.info("An AccountCreatedEvent occurred.");
         this.accountId = accountCreatedEvent.getId();
         this.balance = accountCreatedEvent.getBalance();
         this.status = "CREATED";
@@ -48,13 +48,13 @@ public class AccountAggregate {
 
     @EventSourcingHandler
     public void on(AccountActivatedEvent accountActivatedEvent) {
-        log.info("An AccountActivatedEvent occurred.");
+        //log.info("An AccountActivatedEvent occurred.");
         this.status = accountActivatedEvent.getStatus();
     }
 
     @CommandHandler
     public void on(DepositMoneyCommand depositMoneyCommand) {
-        log.info("DepositMoneyCommand received.");
+        //log.info("DepositMoneyCommand received.");
         AggregateLifecycle.apply(new AccountCreditedEvent(
                 depositMoneyCommand.getId(),
                 depositMoneyCommand.getAmount()));
@@ -62,13 +62,13 @@ public class AccountAggregate {
 
     @EventSourcingHandler
     public void on(AccountCreditedEvent accountCreditedEvent) {
-        log.info("An AccountCreditedEvent occurred.");
+       // log.info("An AccountCreditedEvent occurred.");
         this.balance = this.balance.add(accountCreditedEvent.getAmount());
     }
 
     @CommandHandler
     public void on(WithdrawMoneyCommand withdrawMoneyCommand) {
-        log.info("WithdrawMoneyCommand received.");
+        //log.info("WithdrawMoneyCommand received.");
         AggregateLifecycle.apply(new AccountDebitedEvent(
                 withdrawMoneyCommand.getId(),
                 withdrawMoneyCommand.getAmount()));
@@ -76,7 +76,7 @@ public class AccountAggregate {
 
     @EventSourcingHandler
     public void on(AccountDebitedEvent accountDebitedEvent) {
-        log.info("An AccountDebitedEvent occurred.");
+        //log.info("An AccountDebitedEvent occurred.");
         this.balance = this.balance.subtract(accountDebitedEvent.getAmount());
     }
 }
